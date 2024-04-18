@@ -9,7 +9,7 @@ class MainWindow(QMainWindow):
         loadUi("StartScreen.ui", self)
 
         bitcoin_db = BitcoinDatabase()
-        bitcoin_db.continuously_update_data() 
+        while (True): bitcoin_db.continuously_update_data() 
 
 def main():
     app = QApplication(sys.argv)
