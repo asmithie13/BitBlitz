@@ -36,7 +36,7 @@ class BitcoinDatabase:
 
         return timestamp, price, volume
 
-    def continuously_update_data(self, interval=1):
+    def continuously_update_data(self, interval=60):
         # Update data continuously at specified interval (in seconds)
         while True:
             timestamp, price, volume = self.fetch_realtime_data()
