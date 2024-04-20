@@ -1,6 +1,8 @@
 import sqlite3
 import time
 import requests
+import matplotlib.pyplot as plt
+from datetime import datetime
 
 class BitcoinDatabase:
     def __init__(self, db_name='bitcoin.db'):
@@ -36,12 +38,45 @@ class BitcoinDatabase:
 
         return timestamp, price, volume
 
-    def continuously_update_data(self, interval=60):
-        # Update data continuously at specified interval (in seconds)
-        while True:
-            timestamp, price, volume = self.fetch_realtime_data()
-            self.add_data(timestamp, price, volume)
-            time.sleep(interval)
+    def fetch_historical_data(self, hours=24):
+        end_time = int(time.time())
+        start_time = end_time - hours * 3600  # hours ago
+
+        api_url = f'https://api.coindesk.com/v1/bpi/historical/close.json?start={start_time}&end={end_time}&index=USD'
+        response = requests.get(api_url)
+        data = response.json()
+        
+        historical_data = {}
+        for date, price in data['bpi'].items():
+            timestamp = int(datetime.strptime(date, '%Y-%m-%d').timestamp())
+            historical_data[timestamp] = price
+
+        return historical_data
+
+
+
+    def plot_recent_prices(self):
+        historical_data = self.fetch_historical_data(hours=24)
+        if not historical_data:
+            print("No historical data fetched.")
+            return
+
+        dates = []
+        prices = []
+
+        for timestamp, price in historical_data.items():
+            dates.append(datetime.fromtimestamp(int(timestamp)))
+            prices.append(price)
+
+        plt.plot(dates, prices, marker='o', linestyle='-')
+        plt.xlabel('Time')
+        plt.ylabel('Price (USD)')
+        plt.title('Bitcoin Prices in the Last 24 Hours')
+        plt.xticks(rotation=45)
+        plt.tight_layout()
+        plt.show()
+
+
 
     def close_connection(self):
         self.conn.close()

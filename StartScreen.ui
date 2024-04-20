@@ -48,8 +48,20 @@
       </property>
      </widget>
     </item>
-    <item row="1" column="3" rowspan="5">
+    <item row="1" column="3" rowspan="4">
      <widget class="QTableWidget" name="tableWidget">
+      <property name="minimumSize">
+       <size>
+        <width>211</width>
+        <height>301</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>211</width>
+        <height>301</height>
+       </size>
+      </property>
       <row>
        <property name="text">
         <string/>
@@ -211,13 +223,6 @@
       </property>
      </widget>
     </item>
-    <item row="2" column="2">
-     <widget class="QLabel" name="label_2">
-      <property name="text">
-       <string>STOCK PICTURE</string>
-      </property>
-     </widget>
-    </item>
     <item row="3" column="0">
      <widget class="QLabel" name="label_5">
       <property name="font">
@@ -258,6 +263,13 @@
       </property>
      </widget>
     </item>
+    <item row="3" column="2">
+     <widget class="QLabel" name="label_2">
+      <property name="text">
+       <string>STOCK PICTURE</string>
+      </property>
+     </widget>
+    </item>
    </layout>
   </widget>
   <widget class="QMenuBar" name="menubar">
@@ -266,7 +278,7 @@
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>21</height>
+     <height>22</height>
     </rect>
    </property>
   </widget>
