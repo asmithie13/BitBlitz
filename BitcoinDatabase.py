@@ -28,32 +28,47 @@ class BitcoinDatabase:
         return self.cur.fetchall()
 
     def fetch_realtime_data(self):
-        api_url = 'https://api.coindesk.com/v1/bpi/currentprice/BTC.json'
+        api_url = 'https://api.coincap.io/v2/assets/bitcoin'
         response = requests.get(api_url)
         data = response.json()
 
-        timestamp = int(time.time())  # Current timestamp
-        price = data['bpi']['USD']['rate_float']  # USD rate
-        volume = None  # Since CoinDesk API doesn't provide volume, set it to None
+        if response.status_code == 200:
+            timestamp = int(time.time())  # Current timestamp
+            price = float(data['data']['priceUsd'])  # USD rate
+            volume = None  # CoinCap API doesn't provide volume, set it to None
 
-        return timestamp, price, volume
+            return timestamp, price, volume
+        else:
+            print(f"Failed to fetch data: {data['error']}")
+            return None, None, None
+        
+    def continuously_update_data(self, interval=60):
+        while True:
+            timestamp, price, _ = self.fetch_realtime_data()
+            self.add_data(timestamp, price,0)
+            print(f"Added data: Timestamp={timestamp}, Price={price}")
+            time.sleep(interval)
+
 
     def fetch_historical_data(self, hours=24):
-        end_time = int(time.time())
-        start_time = end_time - hours * 3600  # hours ago
+        end_time = int(time.time()) * 1000  # in milliseconds
+        start_time = end_time - hours * 60 * 60 * 1000  # hours ago
 
-        api_url = f'https://api.coindesk.com/v1/bpi/historical/close.json?start={start_time}&end={end_time}&index=USD'
+        api_url = f'https://api.coincap.io/v2/assets/bitcoin/history?interval=m1&start={start_time}&end={end_time}'
         response = requests.get(api_url)
         data = response.json()
-        
-        historical_data = {}
-        for date, price in data['bpi'].items():
-            timestamp = int(datetime.strptime(date, '%Y-%m-%d').timestamp())
-            historical_data[timestamp] = price
 
-        return historical_data
+        if response.status_code == 200:
+            historical_data = {}
+            for point in data['data']:
+                timestamp = point['time']
+                price = point['priceUsd']
+                historical_data[timestamp] = price
 
-
+            return historical_data
+        else:
+            print(f"Failed to fetch historical data: {data['error']}")
+            return {}
 
     def plot_recent_prices(self):
         historical_data = self.fetch_historical_data(hours=24)
@@ -61,22 +76,29 @@ class BitcoinDatabase:
             print("No historical data fetched.")
             return
 
-        dates = []
-        prices = []
+        timestamps = list(historical_data.keys())
+        prices = list(historical_data.values())
 
-        for timestamp, price in historical_data.items():
-            dates.append(datetime.fromtimestamp(int(timestamp)))
-            prices.append(price)
+        # Convert prices to numerical values (floats)
+        prices = [float(price) for price in prices]
 
-        plt.plot(dates, prices, marker='o', linestyle='-')
+        dates = [datetime.fromtimestamp(ts / 1000) for ts in timestamps]
+
+        plt.plot(dates, prices, linestyle='-')
         plt.xlabel('Time')
         plt.ylabel('Price (USD)')
         plt.title('Bitcoin Prices in the Last 24 Hours')
-        plt.xticks(rotation=45)
+
+        # Adjusting the number of price ticks
+        num_ticks = 8
+        price_min = min(prices)
+        price_max = max(prices)
+        price_step = (price_max - price_min) / (num_ticks - 1)
+        price_ticks = [price_min + i * price_step for i in range(num_ticks)]
+        plt.yticks(price_ticks)
+
         plt.tight_layout()
         plt.show()
-
-
 
     def close_connection(self):
         self.conn.close()

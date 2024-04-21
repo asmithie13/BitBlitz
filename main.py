@@ -18,8 +18,7 @@ class MainWindow(QMainWindow):
 
         bitcoin_db.plot_recent_prices()
 
-
-        #bitcoin_db = BitcoinDatabase()
+        bitcoin_db = BitcoinDatabase()
         #bitcoin_db.continuously_update_data() 
 
 def main():
