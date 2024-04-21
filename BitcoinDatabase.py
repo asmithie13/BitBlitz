@@ -98,6 +98,7 @@ class BitcoinDatabase:
         plt.yticks(price_ticks)
 
         plt.tight_layout()
+        plt.savefig('bitcoin_prices.png')
         plt.show()
 
     def close_connection(self):
