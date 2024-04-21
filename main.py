@@ -17,8 +17,9 @@ class MainWindow(QMainWindow):
         start_date = time.strftime('%Y-%m-%d', time.gmtime(start_date))
 
         bitcoin_db.plot_recent_prices()
+        bitcoin_db.update_historical_table
 
-        bitcoin_db = BitcoinDatabase()
+        #bitcoin_db = BitcoinDatabase()
         #bitcoin_db.continuously_update_data() 
 
 def main():

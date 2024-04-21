@@ -9,6 +9,7 @@ class BitcoinDatabase:
         self.conn = sqlite3.connect(db_name)
         self.cur = self.conn.cursor()
         self.create_table()
+        self.update_historical_table()
 
     def create_table(self):
         self.cur.execute('''CREATE TABLE IF NOT EXISTS bitcoin_data (
@@ -49,6 +50,19 @@ class BitcoinDatabase:
             print(f"Added data: Timestamp={timestamp}, Price={price}")
             time.sleep(interval)
 
+    def update_historical_table(self):
+        # Clear the existing data from the table
+        self.cur.execute('''DELETE FROM bitcoin_data''')
+        self.conn.commit()
+
+        # Fetch historical data for the last 24 hours
+        historical_data = self.fetch_historical_data(hours=24)
+
+        # Insert fetched historical data into the table
+        for timestamp, price in historical_data.items():
+            self.add_data(timestamp, price, 0)  # Volume is set to 0 for historical data
+
+        print("Historical table updated.")
 
     def fetch_historical_data(self, hours=24):
         end_time = int(time.time()) * 1000  # in milliseconds
