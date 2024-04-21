@@ -17,6 +17,14 @@ class BitcoinDatabase:
                             timestamp INTEGER,
                             price REAL,
                             volume REAL)''')
+
+        self.cur.execute('''CREATE TABLE IF NOT EXISTS userData (
+                            coin VARCHAR,
+                            coinTotal REAL,
+                            initial_USD REAL,
+                            initial_Coin_Price REAL,
+                            current_Coin_Price REAL,
+                            percentProfit REAL)''')
         self.conn.commit()
 
     def add_data(self, timestamp, price, volume):
