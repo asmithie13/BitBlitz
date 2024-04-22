@@ -13,31 +13,27 @@ class MainWindow(QMainWindow):
         self.bitcoin_db = CryptoDatabase()
         self.bitcoin_db.create_table()
 
-        self.bitcoin_db.update_historical_table("bitcoin")
-        self.bitcoin_db.plot_recent_prices("bitcoin")
+        cryptos = ["bitcoin", "ethereum", "dogecoin", "solana", "avalanche", "tether", "tron", "stellar", "litecoin"]
 
-        self.bitcoin_db.update_historical_table("ethereum")
-        self.bitcoin_db.plot_recent_prices("ethereum")
-        
-        self.bitcoin_db.update_historical_table("litecoin")
-        self.bitcoin_db.plot_recent_prices("litecoin")
+        for crypto in cryptos:
+            self.bitcoin_db.update_historical_table(crypto)
+            self.bitcoin_db.plot_recent_prices(crypto)
 
-        '''self.bitcoin_db.plot_recent_prices("bitcoin")
-        self.bitcoin_db.update_historical_table("bitcoin")
-        self.bitcoin_db.plot_recent_prices("bitcoin")
-        self.bitcoin_db.update_historical_table("bitcoin")
-        self.bitcoin_db.plot_recent_prices("bitcoin")
-        self.bitcoin_db.update_historical_table("bitcoin")'''
-
-        self.tableWidget.cellClicked.connect(lambda row=1, column=0: self.handleBitcoin(row, column))
+        self.tableWidget.cellClicked.connect(self.handleCellClick)
 
 
-    def handleBitcoin(self, row, column):
-        if not (row == 0 and column == 0): return
+    def handleCellClick(self, row, column):
+        crypto_names = ["bitcoin", "ethereum", "dogecoin", "solana", "avalanche", "tether", "tron", "stellar", "litecoin"]
+        crypto_item = self.tableWidget.item(row, column)
+        if crypto_item is None:
+            return
 
-        pixmap = QPixmap('bitcoin_prices.png')
-        self.label_2.setPixmap(pixmap)
-        self.label.setText('Selected Crypto: Bitcoin')
+        crypto = crypto_item.text().lower()
+        if crypto in crypto_names:
+            pixmap = QPixmap(f'{crypto}_prices.png')
+            self.label_2.setPixmap(pixmap)
+            self.label.setText(f'Selected Crypto: {crypto.capitalize()}')
+
 
 def main():
     app = QApplication(sys.argv)

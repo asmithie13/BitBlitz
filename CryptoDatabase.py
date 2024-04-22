@@ -31,19 +31,19 @@ class CryptoDatabase:
                             symbol TEXT,
                             price REAL,
                             volume REAL)''')
-        self.cur.execute('''CREATE TABLE IF NOT EXISTS sol_data (
+        self.cur.execute('''CREATE TABLE IF NOT EXISTS solana_data (
                             id INTEGER PRIMARY KEY,
                             timestamp INTEGER,
                             symbol TEXT,
                             price REAL,
                             volume REAL)''')
-        self.cur.execute('''CREATE TABLE IF NOT EXISTS avax_data (
+        self.cur.execute('''CREATE TABLE IF NOT EXISTS avalanche_data (
                             id INTEGER PRIMARY KEY,
                             timestamp INTEGER,
                             symbol TEXT,
                             price REAL,
                             volume REAL)''')
-        self.cur.execute('''CREATE TABLE IF NOT EXISTS dot_data (
+        self.cur.execute('''CREATE TABLE IF NOT EXISTS tether_data (
                             id INTEGER PRIMARY KEY,
                             timestamp INTEGER,
                             symbol TEXT,
@@ -139,7 +139,7 @@ class CryptoDatabase:
         end_time = int(time.time()) * 1000  # in milliseconds
         start_time = end_time - hours * 60 * 60 * 1000  # hours ago
 
-        api_url = f'https://api.coincap.io/v2/assets/{symbol.lower()}/history?interval=m1&start={start_time}&end={end_time}'
+        api_url = f'https://api.coincap.io/v2/assets/{symbol}/history?interval=m1&start={start_time}&end={end_time}'
         response = requests.get(api_url)
         data = response.json()
 
@@ -187,6 +187,11 @@ class CryptoDatabase:
         plt.tight_layout()
         plt.savefig(f'{symbol}_prices.png')
         # plt.show()
+
+    def purchaseCoin(self,dollars,symbol):
+        tableName = "userData"
+        
+        data = self.get_data(symbol)
 
     def close_connection(self):
         self.conn.close()
