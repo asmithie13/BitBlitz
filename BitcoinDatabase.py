@@ -121,7 +121,7 @@ class BitcoinDatabase:
 
         plt.tight_layout()
         plt.savefig('bitcoin_prices.png')
-        plt.show()
+        #plt.show()
 
     def close_connection(self):
         self.conn.close()
