@@ -3,16 +3,31 @@ import time
 from PyQt6.QtWidgets import QApplication, QMainWindow
 from PyQt6.QtGui import QPixmap
 from PyQt6.uic import loadUi
-from BitcoinDatabase import BitcoinDatabase
+from CryptoDatabase import CryptoDatabase
 
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         loadUi("StartScreen.ui", self)
 
-        self.bitcoin_db = BitcoinDatabase()
-        self.bitcoin_db.plot_recent_prices()
-        self.bitcoin_db.update_historical_table
+        self.bitcoin_db = CryptoDatabase()
+        self.bitcoin_db.create_table()
+
+        self.bitcoin_db.update_historical_table("bitcoin")
+        self.bitcoin_db.plot_recent_prices("bitcoin")
+
+        self.bitcoin_db.update_historical_table("ethereum")
+        self.bitcoin_db.plot_recent_prices("ethereum")
+        
+        self.bitcoin_db.update_historical_table("litecoin")
+        self.bitcoin_db.plot_recent_prices("litecoin")
+
+        '''self.bitcoin_db.plot_recent_prices("bitcoin")
+        self.bitcoin_db.update_historical_table("bitcoin")
+        self.bitcoin_db.plot_recent_prices("bitcoin")
+        self.bitcoin_db.update_historical_table("bitcoin")
+        self.bitcoin_db.plot_recent_prices("bitcoin")
+        self.bitcoin_db.update_historical_table("bitcoin")'''
 
         self.tableWidget.cellClicked.connect(lambda row=1, column=0: self.handleBitcoin(row, column))
 
