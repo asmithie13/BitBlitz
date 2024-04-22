@@ -20,6 +20,8 @@ class MainWindow(QMainWindow):
             self.bitcoin_db.plot_recent_prices(crypto)
 
         self.tableWidget.cellClicked.connect(self.handleCellClick)
+        self.lineEdit.returnPressed.connect(self.buyCoin)
+
 
 
     def handleCellClick(self, row, column):
@@ -33,6 +35,16 @@ class MainWindow(QMainWindow):
             pixmap = QPixmap(f'{crypto}_prices.png')
             self.label_2.setPixmap(pixmap)
             self.label.setText(f'Selected Crypto: {crypto.capitalize()}')
+
+    def buyCoin(self):
+        crypto_names = ["bitcoin", "ethereum", "dogecoin", "solana", "avalanche", "tether", "tron", "stellar", "litecoin"]
+        symbol = self.tableWidget.currentItem().text()
+
+        dollars = float(self.lineEdit.text())
+
+        if symbol.lower() not in crypto_names: return
+        self.bitcoin_db.purchaseCoin(dollars,symbol)
+            
 
 
 def main():

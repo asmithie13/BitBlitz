@@ -188,10 +188,28 @@ class CryptoDatabase:
         plt.savefig(f'{symbol}_prices.png')
         # plt.show()
 
+    def get_newest_data(self, symbol):
+        table_name = f"{symbol.lower()}_data"
+        query = f"SELECT timestamp, price FROM {table_name} ORDER BY timestamp DESC LIMIT 1"
+        self.cur.execute(query)
+        row = self.cur.fetchone()
+
+        if row:
+            timestamp, price = row
+            return timestamp, float(price)
+        else:
+            print(f"No data found for {symbol}.")
+            return None, None
+
     def purchaseCoin(self,dollars,symbol):
         tableName = "userData"
-        
-        data = self.get_data(symbol)
+        latestTime, price = self.get_newest_data(symbol)
+        coinTotal = dollars/price
+
+        self.cur.execute(f'''INSERT INTO {tableName} (coin, coinTotal, initial_USD, initial_Coin_Price, current_Coin_Price, percentProfit)
+                            VALUES (?, ?, ?, ?, ?, ?)''', (symbol, coinTotal, dollars, price, price,0))
+        self.conn.commit()
+
 
     def close_connection(self):
         self.conn.close()
