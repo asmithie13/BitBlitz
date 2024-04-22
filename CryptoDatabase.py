@@ -24,7 +24,7 @@ class CryptoDatabase:
                             symbol TEXT,
                             price REAL,
                             volume REAL)''')
-        self.conn.commit()
+        
         self.cur.execute('''CREATE TABLE IF NOT EXISTS dogecoin_data (
                             id INTEGER PRIMARY KEY,
                             timestamp INTEGER,
