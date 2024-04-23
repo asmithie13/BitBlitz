@@ -237,7 +237,7 @@
        </font>
       </property>
       <property name="text">
-       <string>Today's Profits</string>
+       <string>Money Invested</string>
       </property>
      </widget>
     </item>
@@ -274,7 +274,7 @@
     <item row="4" column="1">
      <widget class="QLabel" name="label_2">
       <property name="text">
-       <string>STOCK PICTURE</string>
+       <string/>
       </property>
      </widget>
     </item>

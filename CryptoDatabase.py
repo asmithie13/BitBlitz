@@ -69,9 +69,11 @@ class CryptoDatabase:
                             volume REAL)''')
         
         self.cur.execute('''CREATE TABLE IF NOT EXISTS userData (
+                            id INTEGER PRIMARY KEY,
                             coin VARCHAR,
                             coinTotal REAL,
                             initial_USD REAL,
+                            current_USD REAL,
                             initial_Coin_Price REAL,
                             current_Coin_Price REAL,
                             percentProfit REAL)''')
@@ -206,10 +208,72 @@ class CryptoDatabase:
         latestTime, price = self.get_newest_data(symbol)
         coinTotal = dollars/price
 
-        self.cur.execute(f'''INSERT INTO {tableName} (coin, coinTotal, initial_USD, initial_Coin_Price, current_Coin_Price, percentProfit)
-                            VALUES (?, ?, ?, ?, ?, ?)''', (symbol, coinTotal, dollars, price, price,0))
+        self.cur.execute(f'''INSERT INTO {tableName} (coin, coinTotal, initial_USD, current_USD,initial_Coin_Price, current_Coin_Price, percentProfit)
+                            VALUES (?, ?, ?, ?, ?, ?, ?)''', (symbol, coinTotal, dollars, dollars, price, price,0))
         self.conn.commit()
 
+    def getExtremePrices(self, symbol):
+        table_name = f"{symbol.lower()}_data"
+        newest_query = f"SELECT timestamp, price FROM {table_name} ORDER BY timestamp DESC LIMIT 1"
+        self.cur.execute(newest_query)
+        newest_row = self.cur.fetchone()
+        newest_timestamp, newest_price = newest_row if newest_row else (None, None)
+
+        oldest_query = f"SELECT timestamp, price FROM {table_name} ORDER BY timestamp ASC LIMIT 1"
+        self.cur.execute(oldest_query)
+        oldest_row = self.cur.fetchone()
+        oldest_timestamp, oldest_price = oldest_row if oldest_row else (None, None)
+
+        return float(newest_price),float(oldest_price)
+    
+
+    def updatePurchaseTable(self,priceList):
+        cryptos = ["bitcoin", "ethereum", "dogecoin", "solana", "avalanche", "tether", "tron", "stellar", "litecoin"]
+
+        query = "SELECT * FROM userData"
+        self.cur.execute(query)
+        rows = self.cur.fetchall()
+        newPrice = None
+        gain = 0
+        invested = 0
+
+        for count, row in enumerate(rows):
+
+            if row[1] == "Bitcoin":
+                newPrice = str(priceList[0][0])
+            elif row[1] == "Ethereum":
+                newPrice = str(priceList[1][0])
+            elif row[1] == "Dogecoin":
+                newPrice = str(priceList[2][0])
+            elif row[1] == "Solana":
+                newPrice = str(priceList[3][0])
+            elif row[1] == "Avalanche":
+                newPrice = str(priceList[4][0])
+            elif row[1] == "Tether":
+                newPrice = str(priceList[5][0])
+            elif row[1] == "TRON":
+                newPrice = str(priceList[6][0])
+            elif row[1] == "Stellar":
+                newPrice = str(priceList[7][0])
+            elif row[1] == "Litecoin":
+                newPrice = str(priceList[8][0])
+
+            gain += float(row[4]) - float(row[3])
+            invested += float(row[3])
+                
+            percentProfit = str(float(newPrice) / float(row[5]))
+            query = f'''
+                UPDATE userData
+                SET current_USD = ?,
+                    current_Coin_Price = ?,
+                    percentProfit = ?
+                WHERE id = ?    
+                '''
+            self.cur.execute(query,(float(percentProfit) * float(row[3]),newPrice,percentProfit,int(count + 1), ))
+
+        self.conn.commit()
+        
+        return invested, gain
 
     def close_connection(self):
         self.conn.close()
