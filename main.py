@@ -56,7 +56,7 @@ class MainWindow(QMainWindow):
         invested, gain = self.bitcoin_db.updatePurchaseTable(priceList)
 
         self.label_5.setText("$" + (str(invested)))
-        self.label_7.setText(str(format(gain, ".00%")))
+        self.label_7.setText("$" + str(gain))
 
         for i in range(9):
             perf = (float(priceList[i][0]) / float(priceList[i][1])) * 100 - 100
