@@ -58,7 +58,7 @@ class MainWindow(QMainWindow):
         self.label_5.setText("$" + (str(invested)))
         self.label_7.setText("$" + str(gain))
 
-        for i in range(9):
+        for i in range(len(cryptos)):
             perf = (float(priceList[i][0]) / float(priceList[i][1])) * 100 - 100
             perf = f"{perf:.2f}" + "%"
             self.tableWidget.setItem(i, 1, QTableWidgetItem(perf))
