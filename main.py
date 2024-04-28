@@ -34,7 +34,7 @@ class MainWindow(QMainWindow):
 
         crypto = crypto_item.text().lower()
         if crypto in crypto_names:
-            pixmap = QPixmap(f'{crypto}_prices.png')
+            pixmap = QPixmap(f'Coin Images/{crypto}_prices.png')
             self.label_2.setPixmap(pixmap)
             self.label.setText(f'Selected Crypto: {crypto.capitalize()}')
 

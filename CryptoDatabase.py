@@ -187,7 +187,7 @@ class CryptoDatabase:
         plt.yticks(price_ticks)
 
         plt.tight_layout()
-        plt.savefig(f'{symbol}_prices.png')
+        plt.savefig(f'Coin Images/{symbol}_prices.png')
         # plt.show()
 
     def get_newest_data(self, symbol):
